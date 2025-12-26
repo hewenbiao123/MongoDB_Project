@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>统计分析 - 游戏用户管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 30px;
+        }
+        .stats-section {
+            margin-bottom: 30px;
+        }
+        .chart-container {
+            height: 300px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">统计分析</h1>
+        
+        <a href="/" class="btn btn-primary mb-4">返回用户列表</a>
+        
+        <!-- 用户等级分布 -->
+        <div class="stats-section">
+            <h2>用户等级分布</h2>
+            <div id="levelDistributionChart" class="chart-container"></div>
+        </div>
+        
+        <!-- 装备类型分布 -->
+        <div class="stats-section">
+            <h2>装备类型分布</h2>
+            <div id="equipmentTypeChart" class="chart-container"></div>
+        </div>
+        
+        <!-- 积分排行榜 -->
+        <div class="stats-section">
+            <h2>积分排行榜</h2>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>排名</th>
+                        <th>用户名</th>
+                        <th>昵称</th>
+                        <th>积分</th>
+                    </tr>
+                </thead>
+                <tbody id="pointsRankingBody">
+                    <!-- 积分排行榜数据将通过JavaScript动态加载 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // 页面加载时获取统计数据
+        window.onload = function() {
+            loadLevelDistribution();
+            loadEquipmentTypeDistribution();
+            loadPointsRanking();
+        };
+        
+        // 加载用户等级分布
+        function loadLevelDistribution() {
+            fetch('/api/stats/level-distribution')
+                .then(response => response.json())
+                .then(data => {
+                    const chartContainer = document.getElementById('levelDistributionChart');
+                    
+                    // 清空容器
+                    while (chartContainer.firstChild) {
+                        chartContainer.removeChild(chartContainer.firstChild);
+                    }
+                    
+                    if (data.length === 0) {
+                        // 显示无数据提示
+                        const noDataDiv = document.createElement('div');
+                        noDataDiv.className = 'text-center p-5 text-muted';
+                        noDataDiv.textContent = '暂无用户等级分布数据';
+                        chartContainer.appendChild(noDataDiv);
+                        return;
+                    }
+                    
+                    const levels = data.map(item => item._id);
+                    const counts = data.map(item => item.count);
+                    
+                    // 创建canvas元素
+                    const canvas = document.createElement('canvas');
+                    chartContainer.appendChild(canvas);
+                    
+                    const ctx = canvas.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: levels,
+                            datasets: [{
+                                label: '用户数量',
+                                data: counts,
+                                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const chartContainer = document.getElementById('levelDistributionChart');
+                    chartContainer.innerHTML = '<div class="text-center p-5 text-danger">加载数据失败</div>';
+                });
+        }
+        
+        // 加载装备类型分布
+        function loadEquipmentTypeDistribution() {
+            fetch('/api/stats/equipment-type-distribution')
+                .then(response => response.json())
+                .then(data => {
+                    const chartContainer = document.getElementById('equipmentTypeChart');
+                    
+                    // 清空容器
+                    while (chartContainer.firstChild) {
+                        chartContainer.removeChild(chartContainer.firstChild);
+                    }
+                    
+                    if (data.length === 0) {
+                        // 显示无数据提示
+                        const noDataDiv = document.createElement('div');
+                        noDataDiv.className = 'text-center p-5 text-muted';
+                        noDataDiv.textContent = '暂无装备类型分布数据';
+                        chartContainer.appendChild(noDataDiv);
+                        return;
+                    }
+                    
+                    const types = data.map(item => item._id);
+                    const counts = data.map(item => item.count);
+                    
+                    // 创建canvas元素
+                    const canvas = document.createElement('canvas');
+                    chartContainer.appendChild(canvas);
+                    
+                    const ctx = canvas.getContext('2d');
+                    new Chart(ctx, {
+                        type: 'pie',
+                        data: {
+                            labels: types,
+                            datasets: [{
+                                data: counts,
+                                backgroundColor: [
+                                    'rgba(255, 99, 132, 0.6)',
+                                    'rgba(54, 162, 235, 0.6)',
+                                    'rgba(255, 206, 86, 0.6)',
+                                    'rgba(75, 192, 192, 0.6)',
+                                    'rgba(153, 102, 255, 0.6)',
+                                    'rgba(255, 159, 64, 0.6)'
+                                ],
+                                borderColor: [
+                                    'rgba(255, 99, 132, 1)',
+                                    'rgba(54, 162, 235, 1)',
+                                    'rgba(255, 206, 86, 1)',
+                                    'rgba(75, 192, 192, 1)',
+                                    'rgba(153, 102, 255, 1)',
+                                    'rgba(255, 159, 64, 1)'
+                                ],
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const chartContainer = document.getElementById('equipmentTypeChart');
+                    chartContainer.innerHTML = '<div class="text-center p-5 text-danger">加载数据失败</div>';
+                });
+        }
+        
+        // 加载积分排行榜
+        function loadPointsRanking() {
+            fetch('/api/stats/points-ranking')
+                .then(response => response.json())
+                .then(data => {
+                    const tableBody = document.getElementById('pointsRankingBody');
+                    tableBody.innerHTML = '';
+                    
+                    if (data.length === 0) {
+                        // 显示无数据提示
+                        const noDataRow = document.createElement('tr');
+                        noDataRow.innerHTML = `
+                            <td colspan="4" class="text-center p-5 text-muted">
+                                暂无积分排行榜数据
+                            </td>
+                        `;
+                        tableBody.appendChild(noDataRow);
+                        return;
+                    }
+                    
+                    data.forEach((user, index) => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td>${user.username || ''}</td>
+                            <td>${user.nickname || ''}</td>
+                            <td>${user.points ? user.points.total : 0}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    const tableBody = document.getElementById('pointsRankingBody');
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4" class="text-center p-5 text-danger">
+                                加载数据失败
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+    </script>
+</body>
+</html>

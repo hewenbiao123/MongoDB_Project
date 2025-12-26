@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户详情 - 游戏用户管理系统</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        .container {
+            margin-top: 30px;
+        }
+        .user-info {
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 30px;
+        }
+        .action-buttons {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">用户详情</h1>
+        
+        <a href="/" class="btn btn-primary mb-4">返回用户列表</a>
+        
+        <div id="userInfo" class="user-info">
+            <!-- 用户基本信息将通过JavaScript动态加载 -->
+        </div>
+        
+        <!-- 装备管理 -->
+        <div class="section">
+            <div class="action-buttons">
+                <h2>装备列表</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipmentModal">添加装备</button>
+            </div>
+            
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>装备名称</th>
+                        <th>类型</th>
+                        <th>等级</th>
+                        <th>攻击力</th>
+                        <th>防御力</th>
+                        <th>获取时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="equipmentTableBody">
+                    <!-- 装备数据将通过JavaScript动态加载 -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- 积分管理 -->
+        <div class="section">
+            <div class="action-buttons">
+                <h2>积分信息</h2>
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updatePointsModal">更新积分</button>
+            </div>
+            
+            <div id="pointsInfo" class="mb-4">
+                <!-- 积分总额将通过JavaScript动态加载 -->
+            </div>
+            
+            <h3>积分变动记录</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>变动值</th>
+                        <th>原因</th>
+                        <th>时间</th>
+                    </tr>
+                </thead>
+                <tbody id="pointsHistoryBody">
+                    <!-- 积分历史数据将通过JavaScript动态加载 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- 添加装备模态框 -->
+    <div class="modal fade" id="addEquipmentModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">添加装备</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addEquipmentForm">
+                        <div class="mb-3">
+                            <label for="equipmentName" class="form-label">装备名称</label>
+                            <input type="text" class="form-control" id="equipmentName" name="name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipmentType" class="form-label">装备类型</label>
+                            <input type="text" class="form-control" id="equipmentType" name="type" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipmentLevel" class="form-label">装备等级</label>
+                            <input type="number" class="form-control" id="equipmentLevel" name="level" min="1" value="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipmentAttack" class="form-label">攻击力</label>
+                            <input type="number" class="form-control" id="equipmentAttack" name="attack" min="0" value="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="equipmentDefense" class="form-label">防御力</label>
+                            <input type="number" class="form-control" id="equipmentDefense" name="defense" min="0" value="0" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="addEquipment()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 更新积分模态框 -->
+    <div class="modal fade" id="updatePointsModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">更新积分</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="updatePointsForm">
+                        <div class="mb-3">
+                            <label for="pointsChange" class="form-label">积分变动值</label>
+                            <input type="number" class="form-control" id="pointsChange" name="change" required>
+                            <small class="form-text text-muted">正数表示增加积分，负数表示扣除积分</small>
+                        </div>
+                        <div class="mb-3">
+                            <label for="pointsReason" class="form-label">变动原因</label>
+                            <input type="text" class="form-control" id="pointsReason" name="reason" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" onclick="updatePoints()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 获取URL中的用户ID
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user_id') || '{{ user_id }}';
+        
+        // 页面加载时获取用户详情
+        window.onload = function() {
+            loadUserDetails();
+        };
+        
+        // 加载用户详情
+        function loadUserDetails() {
+            fetch(`/api/users/${userId}`)
+                .then(response => response.json())
+                .then(user => {
+                    // 显示用户基本信息
+                    const userInfoDiv = document.getElementById('userInfo');
+                    userInfoDiv.innerHTML = `
+                        <h2>基本信息</h2>
+                        <div class="card">
+                            <div class="card-body">
+                                <p><strong>用户名:</strong> ${user.username}</p>
+                                <p><strong>昵称:</strong> ${user.nickname}</p>
+                                <p><strong>等级:</strong> ${user.level}</p>
+                                <p><strong>经验值:</strong> ${user.experience}</p>
+                                <p><strong>注册时间:</strong> ${new Date(user.registration_time).toLocaleString()}</p>
+                                <p><strong>最后登录时间:</strong> ${new Date(user.last_login_time).toLocaleString()}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 显示装备列表
+                    const equipmentTableBody = document.getElementById('equipmentTableBody');
+                    equipmentTableBody.innerHTML = '';
+                    
+                    user.equipment.forEach(equip => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${equip.name}</td>
+                            <td>${equip.type}</td>
+                            <td>${equip.level}</td>
+                            <td>${equip.attack}</td>
+                            <td>${equip.defense}</td>
+                            <td>${new Date(equip.acquisition_time).toLocaleString()}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="editEquipment('${equip._id}')">编辑</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteEquipment('${equip._id}')">删除</button>
+                            </td>
+                        `;
+                        equipmentTableBody.appendChild(row);
+                    });
+                    
+                    // 显示积分信息
+                    const pointsInfoDiv = document.getElementById('pointsInfo');
+                    pointsInfoDiv.innerHTML = `
+                        <div class="card">
+                            <div class="card-body">
+                                <h3>当前积分总额: ${user.points.total}</h3>
+                            </div>
+                        </div>
+                    `;
+                    
+                    // 显示积分变动记录
+                    const pointsHistoryBody = document.getElementById('pointsHistoryBody');
+                    pointsHistoryBody.innerHTML = '';
+                    
+                    user.points.history.forEach(history => {
+                        const row = document.createElement('tr');
+                        const changeClass = history.change > 0 ? 'text-success' : 'text-danger';
+                        const changeSign = history.change > 0 ? '+' : '';
+                        row.innerHTML = `
+                            <td class="${changeClass}">${changeSign}${history.change}</td>
+                            <td>${history.reason}</td>
+                            <td>${new Date(history.time).toLocaleString()}</td>
+                        `;
+                        pointsHistoryBody.appendChild(row);
+                    });
+                })
+                .catch(error => console.error('Error:', error));
+        }
+        
+        // 添加装备
+        function addEquipment() {
+            const form = document.getElementById('addEquipmentForm');
+            const formData = new FormData(form);
+            const equipmentData = Object.fromEntries(formData);
+            
+            // 转换数字类型
+            equipmentData.level = parseInt(equipmentData.level);
+            equipmentData.attack = parseInt(equipmentData.attack);
+            equipmentData.defense = parseInt(equipmentData.defense);
+            
+            fetch(`/api/users/${userId}/equipment`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(equipmentData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 关闭模态框
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addEquipmentModal'));
+                    modal.hide();
+                    
+                    // 重置表单
+                    form.reset();
+                    
+                    // 重新加载用户详情
+                    loadUserDetails();
+                    
+                    alert('装备添加成功！');
+                } else {
+                    alert('添加装备失败：' + data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        // 删除装备
+        function deleteEquipment(equipmentId) {
+            if (confirm('确定要删除这个装备吗？')) {
+                fetch(`/api/users/${userId}/equipment/${equipmentId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 重新加载用户详情
+                        loadUserDetails();
+                        alert('装备删除成功！');
+                    } else {
+                        alert('删除装备失败：' + data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+        
+        // 更新积分
+        function updatePoints() {
+            const form = document.getElementById('updatePointsForm');
+            const formData = new FormData(form);
+            const pointsData = Object.fromEntries(formData);
+            
+            // 转换数字类型
+            pointsData.change = parseInt(pointsData.change);
+            
+            fetch(`/api/users/${userId}/points`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(pointsData),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // 关闭模态框
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('updatePointsModal'));
+                    modal.hide();
+                    
+                    // 重置表单
+                    form.reset();
+                    
+                    // 重新加载用户详情
+                    loadUserDetails();
+                    
+                    alert('积分更新成功！');
+                } else {
+                    alert('更新积分失败：' + data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        // 编辑装备（简化版，仅删除）
+        function editEquipment(equipmentId) {
+            alert('编辑装备功能待实现');
+        }
+    </script>
+</body>
+</html>
