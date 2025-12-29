@@ -92,9 +92,10 @@
                 </div>
                 <div class="modal-body">
                     <form id="addEquipmentForm">
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="equipmentName" class="form-label">装备名称</label>
-                            <input type="text" class="form-control" id="equipmentName" name="name" required>
+                            <input type="text" class="form-control" id="equipmentName" name="name" required autocomplete="off">
+                            <div id="equipmentNameSuggestions" class="position-absolute w-100 bg-white border border-top-0 rounded-bottom" style="z-index: 10; max-height: 200px; overflow-y: auto; display: none;"></div>
                         </div>
                         <div class="mb-3">
                             <label for="equipmentType" class="form-label">装备类型</label>
@@ -137,9 +138,10 @@
                             <input type="number" class="form-control" id="pointsChange" name="change" required>
                             <small class="form-text text-muted">正数表示增加积分，负数表示扣除积分</small>
                         </div>
-                        <div class="mb-3">
+                        <div class="mb-3 position-relative">
                             <label for="pointsReason" class="form-label">变动原因</label>
-                            <input type="text" class="form-control" id="pointsReason" name="reason" required>
+                            <input type="text" class="form-control" id="pointsReason" name="reason" required autocomplete="off">
+                            <div id="pointsReasonSuggestions" class="position-absolute w-100 bg-white border border-top-0 rounded-bottom" style="z-index: 10; max-height: 200px; overflow-y: auto; display: none;"></div>
                         </div>
                     </form>
                 </div>
@@ -160,6 +162,8 @@
         // 页面加载时获取用户详情
         window.onload = function() {
             loadUserDetails();
+            setupEquipmentAutocomplete();
+            setupPointsReasonAutocomplete();
         };
         
         // 加载用户详情
@@ -332,6 +336,187 @@
         // 编辑装备（简化版，仅删除）
         function editEquipment(equipmentId) {
             alert('编辑装备功能待实现');
+        }
+
+        // 设置积分变动原因自动补全
+        function setupPointsReasonAutocomplete() {
+            const pointsReasonInput = document.getElementById('pointsReason');
+            const suggestionsDiv = document.getElementById('pointsReasonSuggestions');
+
+            if (!pointsReasonInput || !suggestionsDiv) {
+                return;
+            }
+
+            let currentTimeout;
+
+            // 监听输入事件
+            pointsReasonInput.addEventListener('input', function() {
+                const keyword = this.value.trim();
+
+                // 清除之前的定时器
+                if (currentTimeout) {
+                    clearTimeout(currentTimeout);
+                }
+
+                // 即使输入为空，也进行搜索（显示所有模板）
+                if (keyword.length === 0) {
+                    loadPointsReasonSuggestions('');
+                    return;
+                }
+
+                // 延迟发送请求，避免频繁请求
+                currentTimeout = setTimeout(() => {
+                    loadPointsReasonSuggestions(keyword);
+                }, 300); // 300ms延迟
+            });
+
+            // 点击其他地方时隐藏建议列表
+            document.addEventListener('click', function(e) {
+                if (e.target !== pointsReasonInput && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+
+            // 点击输入框时显示所有模板
+            pointsReasonInput.addEventListener('focus', function() {
+                loadPointsReasonSuggestions('');
+            });
+
+            // 加载积分变动原因建议的函数
+            function loadPointsReasonSuggestions(keyword) {
+                const requestUrl = `/api/users/${userId}/points/templates/search?keyword=${encodeURIComponent(keyword)}`;
+
+                fetch(requestUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        // 显示建议列表
+                        suggestionsDiv.innerHTML = '';
+                        if (data.length > 0) {
+                            suggestionsDiv.style.display = 'block';
+                            data.forEach(item => {
+                                const suggestionItem = document.createElement('div');
+                                suggestionItem.className = 'p-2 border-bottom cursor-pointer';
+                                suggestionItem.style.cursor = 'pointer';
+                                suggestionItem.textContent = item.reason;
+
+                                // 鼠标悬停效果
+                                suggestionItem.addEventListener('mouseenter', function() {
+                                    this.classList.add('bg-light');
+                                });
+
+                                suggestionItem.addEventListener('mouseleave', function() {
+                                    this.classList.remove('bg-light');
+                                });
+
+                                // 点击建议项时填充表单
+                                suggestionItem.addEventListener('click', function() {
+                                    pointsReasonInput.value = item.reason;
+                                    document.getElementById('pointsChange').value = item.change;
+                                    suggestionsDiv.style.display = 'none';
+                                });
+
+                                suggestionsDiv.appendChild(suggestionItem);
+                            });
+                        } else {
+                            suggestionsDiv.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        suggestionsDiv.style.display = 'none';
+                    });
+            }
+        }
+
+        // 设置装备名称自动补全
+        function setupEquipmentAutocomplete() {
+            const equipmentNameInput = document.getElementById('equipmentName');
+            const suggestionsDiv = document.getElementById('equipmentNameSuggestions');
+
+            if (!equipmentNameInput || !suggestionsDiv) {
+                return;
+            }
+
+            let currentTimeout;
+
+            // 监听输入事件
+            equipmentNameInput.addEventListener('input', function() {
+                const keyword = this.value.trim();
+
+                // 清除之前的定时器
+                if (currentTimeout) {
+                    clearTimeout(currentTimeout);
+                }
+
+                // 即使输入为空，也进行搜索（显示所有装备）
+                if (keyword.length === 0) {
+                    loadEquipmentSuggestions('');
+                    return;
+                }
+
+                // 延迟发送请求，避免频繁请求
+                currentTimeout = setTimeout(() => {
+                    loadEquipmentSuggestions(keyword);
+                }, 300); // 300ms延迟
+            });
+
+            // 点击其他地方时隐藏建议列表
+            document.addEventListener('click', function(e) {
+                if (e.target !== equipmentNameInput && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.style.display = 'none';
+                }
+            });
+
+            // 点击输入框时显示所有装备
+            equipmentNameInput.addEventListener('focus', function() {
+                loadEquipmentSuggestions('');
+            });
+
+            // 加载装备建议的函数
+            function loadEquipmentSuggestions(keyword) {
+                const requestUrl = `/api/users/${userId}/equipment/templates/search?keyword=${encodeURIComponent(keyword)}`;
+
+                fetch(requestUrl)
+                    .then(response => response.json())
+                    .then(data => {
+                        // 显示建议列表
+                        suggestionsDiv.innerHTML = '';
+                        if (data.length > 0) {
+                            suggestionsDiv.style.display = 'block';
+                            data.forEach(item => {
+                                const suggestionItem = document.createElement('div');
+                                suggestionItem.className = 'p-2 border-bottom cursor-pointer';
+                                suggestionItem.style.cursor = 'pointer';
+                                suggestionItem.textContent = item.name;
+
+                                // 鼠标悬停效果
+                                suggestionItem.addEventListener('mouseenter', function() {
+                                    this.classList.add('bg-light');
+                                });
+
+                                suggestionItem.addEventListener('mouseleave', function() {
+                                    this.classList.remove('bg-light');
+                                });
+
+                                // 点击建议项时填充表单
+                                suggestionItem.addEventListener('click', function() {
+                                    equipmentNameInput.value = item.name;
+                                    document.getElementById('equipmentType').value = item.type;
+                                    document.getElementById('equipmentLevel').value = item.level;
+                                    document.getElementById('equipmentAttack').value = item.attack;
+                                    document.getElementById('equipmentDefense').value = item.defense;
+                                    suggestionsDiv.style.display = 'none';
+                                });
+
+                                suggestionsDiv.appendChild(suggestionItem);
+                            });
+                        } else {
+                            suggestionsDiv.style.display = 'none';
+                        }
+                    })
+                    .catch(error => {
+                        suggestionsDiv.style.display = 'none';
+                    });
+            }
         }
     </script>
 </body>
