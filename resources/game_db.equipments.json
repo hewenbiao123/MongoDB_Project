@@ -1,0 +1,170 @@
+[{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e2"
+  },
+  "name": "溢彩荧辉",
+  "type": "佩枪",
+  "level": 90,
+  "attack": 587,
+  "defense": 24.3
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e3"
+  },
+  "name": "不屈命定之冠",
+  "type": "迅刀",
+  "level": 90,
+  "attack": 412,
+  "defense": 72.2
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e4"
+  },
+  "name": "林间的咏叹调",
+  "type": "佩枪",
+  "level": 90,
+  "attack": 500,
+  "defense": 36
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e5"
+  },
+  "name": "镭射切变",
+  "type": "迅刀",
+  "level": 90,
+  "attack": 587,
+  "defense": 38.8
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e6"
+  },
+  "name": "玻色星仪",
+  "type": "音感仪",
+  "level": 90,
+  "attack": 525,
+  "defense": 38.8
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e7"
+  },
+  "name": "脉冲协臂",
+  "type": "臂铠",
+  "level": 90,
+  "attack": 587,
+  "defense": 24.3
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e8"
+  },
+  "name": "相位涟漪",
+  "type": "佩枪",
+  "level": 90,
+  "attack": 587,
+  "defense": 48.6
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653e9"
+  },
+  "name": "源能机锋",
+  "type": "长刃",
+  "level": 90,
+  "attack": 587,
+  "defense": 48.6
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653ea"
+  },
+  "name": "幽冥的忘忧章",
+  "type": "音感仪",
+  "level": 90,
+  "attack": 587,
+  "defense": 24.3
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653eb"
+  },
+  "name": "海的呢喃",
+  "type": "音感仪",
+  "level": 90,
+  "attack": 500,
+  "defense": 72
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653ec"
+  },
+  "name": "昙切",
+  "type": "长刃",
+  "level": 90,
+  "attack": 500,
+  "defense": 36
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653ed"
+  },
+  "name": "和光回唱",
+  "type": "音感仪",
+  "level": 90,
+  "attack": 500,
+  "defense": 36
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653ee"
+  },
+  "name": "万物持存的注释",
+  "type": "臂铠",
+  "level": 90,
+  "attack": 500,
+  "defense": 36
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653ef"
+  },
+  "name": "驭冕铸雷之权",
+  "type": "长刃",
+  "level": 90,
+  "attack": 675,
+  "defense": 12.1
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653f0"
+  },
+  "name": "死与舞",
+  "type": "佩枪",
+  "level": 90,
+  "attack": 500,
+  "defense": 72
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653f1"
+  },
+  "name": "裁春",
+  "type": "迅刀",
+  "level": 90,
+  "attack": 587,
+  "defense": 24.3
+},
+{
+  "_id": {
+    "$oid": "69520fd975e73820e29653f2"
+  },
+  "name": "琼枝冰绡",
+  "type": "音感仪",
+  "level": 90,
+  "attack": 500,
+  "defense": 72
+}]

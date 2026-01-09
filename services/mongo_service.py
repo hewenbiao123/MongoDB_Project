@@ -31,6 +31,8 @@ class MongoService:
             self.client.server_info()
             self.db = self.client[self.db_name]
             self.users_collection = self.db['users']
+            self.equipments_collection = self.db['equipments']
+            self.points_collection = self.db['points']
             self.connected = True
             logger.info("成功连接到MongoDB数据库")
         except ServerSelectionTimeoutError:
@@ -156,3 +158,65 @@ class MongoService:
             }}
         ]
         return list(self.users_collection.aggregate(pipeline))
+
+    def search_equipment_templates(self, keyword, limit=None):
+        """搜索装备模板"""
+        if not self.connected:
+            return []
+
+        # 使用正则表达式进行模糊匹配
+        query = {
+            "name": {"$regex": keyword, "$options": "i"}  # 不区分大小写
+        }
+
+        # 限制返回字段
+        projection = {
+            "name": 1,
+            "type": 1,
+            "level": 1,
+            "attack": 1,
+            "defense": 1
+        }
+
+        # 执行查询，如果提供了limit则限制结果数量
+        if limit is not None:
+            results = list(self.equipments_collection.find(query, projection).limit(limit))
+        else:
+            results = list(self.equipments_collection.find(query, projection))
+
+        # 将ObjectId转换为字符串
+        for item in results:
+            if "_id" in item:
+                item["_id"] = str(item["_id"])
+
+        return results
+
+    def search_points_templates(self, keyword, limit=None):
+        """搜索积分变动模板"""
+        if not self.connected:
+            return []
+
+        # 使用正则表达式进行模糊匹配
+        query = {
+            "reason": {"$regex": keyword, "$options": "i"}  # 不区分大小写
+        }
+        logger.info(f"构建查询条件: {query}")
+
+        # 限制返回字段
+        projection = {
+            "reason": 1,
+            "change": 1
+        }
+
+        # 执行查询，如果提供了limit则限制结果数量
+        if limit is not None:
+            results = list(self.points_collection.find(query, projection).limit(limit))
+        else:
+            results = list(self.points_collection.find(query, projection))
+
+        # 将ObjectId转换为字符串
+        for item in results:
+            if "_id" in item:
+                item["_id"] = str(item["_id"])
+
+        return results

@@ -17,3 +17,14 @@ def update_points(user_id):
     if result:
         return jsonify({"success": True})
     return jsonify({"error": "Failed to update points"}), 400
+
+@bp.route('/templates/search', methods=['GET'])
+def search_points_templates(user_id):
+    keyword = request.args.get('keyword', '')
+    limit_param = request.args.get('limit')
+
+    # 如果没有提供limit参数，则不限制结果数量（显示所有模板）
+    limit = int(limit_param) if limit_param is not None else None
+
+    templates = mongo_service.search_points_templates(keyword, limit)
+    return jsonify(templates)
